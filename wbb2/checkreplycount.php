@@ -24,12 +24,12 @@ if (isset($_GET['fixit']) && trim($_GET['fixit']) == "true") {
 	$fixit = false;
 }
 
-$sql = "SELECT threadid, topic, replycount FROM bb1_threads;";
+$sql = "SELECT threadid, topic, replycount FROM bb" . $n . "_threads;";
 $result = mysqli_query($db, $sql);
 while ($row = mysqli_fetch_object($result)) {
 	$is_replycount = $row->replycount;
 
-	$sql2 = "SELECT count(threadid) AS replycount FROM bb1_posts WHERE threadid='$row->threadid' GROUP BY (threadid)";
+	$sql2 = "SELECT count(threadid) AS replycount FROM bb" . $n . "_posts WHERE threadid='$row->threadid' GROUP BY (threadid)";
 	$result2 = mysqli_query($db, $sql2);
 	while ($row2 = mysqli_fetch_object($result2)) {
 		$should_replycount = $row2->replycount - 1;
@@ -37,7 +37,7 @@ while ($row = mysqli_fetch_object($result)) {
 
 	if ($is_replycount != $should_replycount) {
 		if ($fixit) {
-			$sql = "UPDATE bb1_threads
+			$sql = "UPDATE bb" . $n . "_threads
 					SET replycount = '" . $should_replycount . "'
 					WHERE threadid = '" . $row->threadid . "';";
 			mysqli_query($db, $sql);
