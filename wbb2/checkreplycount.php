@@ -1,27 +1,27 @@
 <?php
 
-//checkreplycount v1.0 by kill0rz - visit kill0rz.com
+//checkreplycount v1.1 by kill0rz - visit kill0rz.com
 
-//Dieses Script prüft, ob die verzeichneten Antworten alles Threads mit den tatsächlichen Antworten übereinstimmen.
-//Bei zu wenig verzeichneten Antworten werde(n) der/die letzte(n) Posts in einem Thread angezeigt, bei zu vielen wird eine leere Seite angehangen.
+// Dieses Script prüft, ob die verzeichneten Antworten aller Threads mit den tatsächlichen Antworten übereinstimmen.
+// Bei zu wenig verzeichneten Antworten werde(n) der/die letzte(n) Posts in einem Thread angezeigt, bei zu vielen wird eine leere Seite angehangen.
 
-//Das Script in das WBB-Verzeichnis packen und im Browser aufrufen. Nach Ausführung wieder löschen.
+// Das Script in das WBB-Verzeichnis packen und im Browser aufrufen. Nach Ausführung wieder löschen.
 
-//kill0rz, 07.02.2016
+// kill0rz, 07.02.2016
 
-//connect to DB:
+// connect to DB:
 require './acp/lib/config.inc.php';
 require './acp/lib/class_db_mysql.php';
 
 $db = mysqli_connect($sqlhost, $sqluser, $sqlpassword, $sqldb);
 
-$mustbefixed = false;
-$hadbeenfixed = false;
+$mustBeFixed = false;
+$hadBeenFixed = false;
 
-if (isset($_GET['fixit']) && trim($_GET['fixit']) == "true") {
-	$fixit = true;
+if (isset($_GET['fixIt']) && trim($_GET['fixIt']) == "true") {
+	$fixIt = true;
 } else {
-	$fixit = false;
+	$fixIt = false;
 }
 
 $sql = "SELECT threadid, topic, replycount FROM bb" . $n . "_threads;";
@@ -36,28 +36,28 @@ while ($row = mysqli_fetch_object($result)) {
 	}
 
 	if ($is_replycount != $should_replycount) {
-		if ($fixit) {
+		if ($fixIt) {
 			$sql = "UPDATE bb" . $n . "_threads
 					SET replycount = '" . $should_replycount . "'
 					WHERE threadid = '" . $row->threadid . "';";
 			mysqli_query($db, $sql);
 			if (mysqli_error($db) == '') {
-				$hadbeenfixed = true;
+				$hadBeenFixed = true;
 			}
 		} else {
 			echo "Thread <i>" . $row->topic . "</i> (" . $row->threadid . ") hat <b>" . $is_replycount . "</b> Antworten; errechnet wurden aber <b>" . $should_replycount . "</b>.<br>\n";
-			$mustbefixed = true;
+			$mustBeFixed = true;
 		}
 	}
 }
 
-if ($mustbefixed) {
+if ($mustBeFixed) {
 	echo '<form action="./checkreplycount.php" method="get" accept-charset="utf-8">';
-	echo '<input type="hidden" name="fixit" value="true">';
+	echo '<input type="hidden" name="fixIt" value="true">';
 	echo '<input type="submit" name="Fix this!" value="Fix this!">';
 	echo "</form>";
-} elseif ($hadbeenfixed) {
-	echo "Erfolgreich geupdatet!";
+} elseif ($hadBeenFixed) {
+	echo "Erfolgreich geupdatet!<br /><a href='./' alt='Startseite'>Zur&uuml;ck zur Startseite</a>";
 } else {
-	echo "Nichts zu tun, alles ok! :)";
+	echo "Nichts zu tun, alles ok! :)<br /><a href='./' alt='Startseite'>Zur&uuml;ck zur Startseite</a>";
 }
